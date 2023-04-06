@@ -3,25 +3,80 @@
     <h3>List of Users</h3>
     <p-button label="Add User"></p-button>
   </div>
-  <p-table #dt [columns]="tableColumns" [value]="users" [autoLayout]="true">
-    >
-    <ng-template pTemplate="caption">
-      <div style="text-align: right">
-        <i class="pi pi-search" style="margin: 4px 4px 0 0"></i>
-        <input
-          type="text"
-          pInputText
-          size="50"
-          placeholder="Table Data Filter"
-          (input)="dt.filterGlobal($any($event.target).value, 'contains')"
-          style="width: auto"
-        />
-      </div>
-    </ng-template>
+  <p-table
+    #dt
+    [columns]="tableColumns"
+    [value]="users"
+    [scrollable]="true"
+    scrollHeight="400px"
+    scrollDirection="both"
+    [lazy]="true"
+    (onLazyLoad)="loadUsers($event)"
+    [tableStyle]="{ 'min-width': '100rem' }"
+    [paginator]="true"
+    [rows]="rows"
+    [totalRecords]="totalRecords"
+    [loading]="loading"
+    [globalFilterFields]="[
+      'firstName',
+      'lastName',
+      'email',
+      'phone',
+      'status',
+      'channel'
+    ]"
+  >
+  <!-- <ng-template pTemplate="caption">
+    <div style="text-align: right">
+      <i class="pi pi-search" style="margin: 4px 4px 0 0"></i>
+      <input
+        type="text"
+        pInputText
+        size="50"
+        placeholder="Table Data Filter"
+        (input)="dt.filterGlobal($any($event.target).value, 'contains')"
+        style="width: auto"
+      />
+    </div>
+    </ng-template> -->
     <ng-template pTemplate="header" let-columns>
       <tr>
         <th *ngFor="let col of columns" pResizableColumn>
           {{ col.header }}
+        </th>
+      </tr>
+      <tr>
+        <th *ngFor="let col of columns">
+          <p-columnFilter
+            type="text"
+            field="{{ col.field }}"
+            placeholder="Type & Press Enter"
+            *ngIf="col.field !== 'status'"
+          >
+          </p-columnFilter>
+          <p-columnFilter
+            type="text"
+            field="{{ col.field }}"
+            placeholder="Type & Press Enter"
+            *ngIf="col.field === 'status'"
+            matchMode="in"
+            [showMenu]="false"
+          >
+            <ng-template
+              pTemplate="filter"
+              let-value
+              let-filter="filterCallback"
+            >
+              <p-dropdown
+                appendTo="body"
+                [options]="statusOptions"
+                placeholder="Any"
+                (onChange)="filter($event.value)"
+                optionLabel="name"
+              >
+              </p-dropdown>
+            </ng-template>
+          </p-columnFilter>
         </th>
       </tr>
     </ng-template>
@@ -39,4 +94,3 @@
     </ng-template>
   </p-table>
 </div>
-<!-- <p-button label="Create User" styleClass="p-button-raised p-button-text"></p-button> -->

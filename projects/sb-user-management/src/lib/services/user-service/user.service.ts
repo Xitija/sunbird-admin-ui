@@ -1,24 +1,23 @@
 import { Injectable } from "@angular/core";
 import { HttpClient, HttpHeaders } from "@angular/common/http";
 import { environment } from "./data";
+// import { environment } from "../../../../../../src/environments/environment";
 @Injectable({
   providedIn: "root",
 })
 export class UserService {
   constructor(private http: HttpClient) {}
 
-  getUsersInOrganization(channelId: string) {
+  getUsersInOrganization(filtersforApi: any, offsetValue = 0) {
     const header = new HttpHeaders({
       "Content-Type": "application/json",
       Authorization: environment.authkey,
       "x-authenticated-user-token": environment.usertoken,
     });
 
-    let body = {
+    const body = {
       request: {
-        filters: {
-          rootOrgId: channelId,
-        },
+        filters: filtersforApi,
         fields: [
           "firstName",
           "lastName",
@@ -32,10 +31,12 @@ export class UserService {
           "status",
           "channel",
         ],
-        limit: 50,
+        limit: 100,
+        offset: offsetValue,
       },
     };
 
+    console.log(offsetValue);
     return this.http.post("api/user/v1/search", body, { headers: header });
   }
 }
